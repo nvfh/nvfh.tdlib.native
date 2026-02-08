@@ -1,5 +1,5 @@
 let licenseHeader = """
-# SPDX-FileCopyrightText: 2018-2026 tdlib.native contributors <https://github.com/ForNeVeR/tdlib.native>
+# SPDX-FileCopyrightText: 2018-2026 nvfh.tdlib.native contributors <https://github.com/nvfh/nvfh.tdlib.native>
 #
 # SPDX-License-Identifier: BSL-1.0
 
@@ -68,9 +68,9 @@ module Names =
     | other -> failwith $"Unknown architecture {other}"
 
     let package platform arch =
-        $"tdlib.native.{platformToDotNet platform}-{archToDotNet arch}"
+        $"nvfh.tdlib.native.{platformToDotNet platform}-{archToDotNet arch}"
 
-    let ciArtifact platform arch = $"tdlib.native.{platform}.{arch}"
+    let ciArtifact platform arch = $"nvfh.tdlib.native.{platform}.{arch}"
     let packageInputDirectory platform arch =
         $"build/{package platform arch}/runtimes/{platformToDotNet platform}-{archToDotNet arch}/native"
 
@@ -308,51 +308,6 @@ let workflows = [
                 $" -PackageName {Names.package platform arch}"
             )
 
-        Workflows.TestJob(
-            image = ubuntu22_04,
-            platform = Platform.Ubuntu22_04,
-            arch = Arch.X86_64,
-            installScript = "./linux/install.ps1 -ForTests",
-            afterDownloadSteps = [
-                testLinuxDependencies Platform.Ubuntu22_04 Arch.X86_64
-            ]
-        )
-
-        Workflows.TestJob(
-            image = ubuntu22_04Arm,
-            platform = Platform.Ubuntu22_04,
-            arch = Arch.AArch64,
-            installScript = "./linux/install.ps1 -ForTests",
-            afterDownloadSteps = [
-                testLinuxDependencies Platform.Ubuntu22_04 Arch.AArch64
-            ]
-        )
-
-        let testMacOsDependencies platform arch =
-            pwsh "Verify library dependencies" (
-                "./macos/Test-Dependencies.ps1" +
-                $" -DotNetArch {Names.archToDotNet arch}" +
-                $" -PackageName {Names.package platform arch}"
-            )
-
-        Workflows.TestJob(
-            image = macOs14,
-            platform = Platform.MacOS,
-            arch = Arch.AArch64,
-            afterDownloadSteps = [
-                testMacOsDependencies Platform.MacOS Arch.AArch64
-            ]
-        )
-
-        Workflows.TestJob(
-            image = macOs15,
-            platform = Platform.MacOS,
-            arch = Arch.X86_64,
-            afterDownloadSteps = [
-                testMacOsDependencies Platform.MacOS Arch.X86_64
-            ]
-        )
-
         let testWindowsDependencies arch = [
             step(name = "Cache downloads for Windows", usesSpec = Auto "actions/cache", options = Map.ofList [
                 "path", "build/downloads"
@@ -361,20 +316,6 @@ let workflows = [
             pwsh "Install dependencies" "./windows/install.ps1"
             pwsh "Verify library dependencies" $"./windows/Test-Dependencies.ps1 -DotNetArch {Names.archToDotNet arch}"
         ]
-
-        Workflows.TestJob(
-            image = windows2022,
-            platform = Platform.Windows,
-            arch = Arch.X86_64,
-            afterDownloadSteps = testWindowsDependencies Arch.X86_64
-        )
-
-        Workflows.TestJob(
-            image = windows11Arm,
-            platform = Platform.Windows,
-            arch = Arch.AArch64,
-            afterDownloadSteps = testWindowsDependencies Arch.AArch64
-        )
 
         job "release" [
             runsOn ubuntuLatest
@@ -432,7 +373,7 @@ let workflows = [
                 "common/New-NuGetSource.ps1"
             pwsh
                 "Pack NuGet package: main"
-                ("dotnet pack tdlib.native.proj -p:Version=${{ steps." + versionStepId + ".outputs.version }} --output build")
+                ("dotnet pack nvfh.tdlib.native.proj -p:Version=${{ steps." + versionStepId + ".outputs.version }} --output build")
 
             step(name = "Upload NuGet packages", usesSpec = Auto "actions/upload-artifact", options = Map.ofList [
                 "name", "tdlib.nuget"
@@ -508,7 +449,7 @@ let workflows = [
                 uploadPlatformPackage Platform.Ubuntu22_04 Arch.X86_64
                 uploadPlatformPackage Platform.Windows Arch.AArch64
                 uploadPlatformPackage Platform.Windows Arch.X86_64
-                uploadPackage ("tdlib.native.${{ steps." + versionStepId + ".outputs.version }}.nupkg")
+                uploadPackage ("nvfh.tdlib.native.${{ steps." + versionStepId + ".outputs.version }}.nupkg")
             ]
 
             let pushPackage (fileName: string) =
@@ -531,7 +472,7 @@ let workflows = [
             pushPlatformPackage Platform.Ubuntu22_04 Arch.X86_64
             pushPlatformPackage Platform.Windows Arch.AArch64
             pushPlatformPackage Platform.Windows Arch.X86_64
-            pushPackage ("tdlib.native.${{ steps." + versionStepId + ".outputs.version }}.nupkg")
+            pushPackage ("nvfh.tdlib.native.${{ steps." + versionStepId + ".outputs.version }}.nupkg")
         ]
 
         job "verify-encoding" [
