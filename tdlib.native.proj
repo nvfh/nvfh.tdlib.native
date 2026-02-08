@@ -6,7 +6,7 @@ SPDX-License-Identifier: BSL-1.0
 
 <Project Sdk="Microsoft.Build.NoTargets/3.7.134">
     <PropertyGroup>
-        <PackageId>tdlib.native</PackageId>
+        <PackageId>nvfh.tdlib.native</PackageId>
         <Description>
             NuGet packaging for tdlib: Telegram client library. Meta-package pulling AArch64 and x86-64 dependencies for Linux, macOS, and Windows.
         </Description>

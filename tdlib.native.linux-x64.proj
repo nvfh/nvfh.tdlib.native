@@ -6,7 +6,7 @@ SPDX-License-Identifier: BSL-1.0
 
 <Project Sdk="Microsoft.Build.NoTargets/3.7.134">
     <PropertyGroup>
-        <PackageId>tdlib.native.linux-x64</PackageId>
+        <PackageId>nvfh.tdlib.native.linux-x64</PackageId>
         <Description>
             NuGet packaging for tdlib: Telegram client library. Linux version for x86-64 architecture (compiled on Ubuntu 22.04, depends on OpenSSL v3).
         </Description>
