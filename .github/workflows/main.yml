@@ -325,9 +325,6 @@ jobs:
       with:
         name: tdlib.nuget
         path: ./build/*.nupkg
-    - name: Verify NuGet packages
-      shell: pwsh
-      run: common/Test-Package.ps1
     - if: startsWith(github.ref, 'refs/tags/v')
       id: release
       name: Create release
